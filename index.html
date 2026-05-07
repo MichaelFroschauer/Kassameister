@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#16a34a">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kassameister</title>
+
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --line:#d9e0ea;
+      --line-soft:#eef2f7;
+      --text:#172033;
+      --muted:#6b7280;
+      --accent:#16a34a;
+      --accent-dark:#15803d;
+      --accent-soft:#ecfdf5;
+      --accent-border:#bbf7d0;
+      --danger:#dc2626;
+      --danger-soft:#fef2f2;
+      --danger-border:#fecaca;
+      --shadow:0 8px 24px rgba(15,23,42,.08);
+      --radius:14px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,
+    body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      touch-action:manipulation;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    button{
+      font:inherit;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      border-radius:12px;
+      padding:9px 10px;
+      min-height:40px;
+      cursor:pointer;
+      font-weight:700;
+      touch-action:manipulation;
+    }
+
+    button:active{
+      transform:scale(.98);
+    }
+
+    button.primary{
+      background:linear-gradient(180deg,var(--accent),var(--accent-dark));
+      color:#fff;
+      border-color:transparent;
+    }
+
+    button.secondary{
+      background:var(--accent-soft);
+      color:#166534;
+      border-color:var(--accent-border);
+    }
+
+    button.danger{
+      background:var(--danger-soft);
+      color:var(--danger);
+      border-color:var(--danger-border);
+    }
+
+    button.ghost{
+      background:#fff;
+    }
+
+    button.selected{
+      border-color:var(--accent);
+      background:var(--accent-soft);
+      box-shadow:0 0 0 2px rgba(22,163,74,.14);
+    }
+
+    .toggle-btn{
+      width:34px;
+      min-width:34px;
+      padding:0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px !important;
+      font-weight:900;
+    }
+
+    .app{
+      height:100svh;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding:6px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      flex:0 0 auto;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+
+    .brand strong{
+      font-size:18px;
+      letter-spacing:-.03em;
+    }
+
+    .current{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .top{
+      flex:0 0 46svh;
+      min-height:160px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .top.collapsed{
+      flex:0 0 66px;
+      min-height:66px;
+    }
+
+    .top.fill{
+      flex:1 1 auto;
+      min-height:0;
+    }
+
+    .topbar,
+    .menubar{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      padding:6px;
+      border-bottom:1px solid var(--line-soft);
+      background:#fff;
+    }
+
+    .topbar-left{
+      min-width:0;
+    }
+
+    .topbar-title{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.2;
+    }
+
+    .topbar-current{
+      font-size:16px;
+      font-weight:850;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .topbar-actions{
+      display:flex;
+      gap:5px;
+      flex:0 0 auto;
+    }
+
+    .topbar-actions button{
+      padding:7px 8px;
+      min-height:34px;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    .topbar-actions .small-action{
+      min-width:40px;
+    }
+
+    .bottom.only-collapsed{
+      flex:0 0 auto;
+    }
+
+    .pay-action {
+      min-width: 40px;
+    }
+
+    .top.collapsed .pay-action{
+      display:none;
+    }
+
+    .topbody{
+      flex:1 1 auto;
+      overflow:auto;
+      padding:6px;
+    }
+
+    .top.collapsed .topbody{
+      display:none;
+    }
+
+    .topbody-collapsed{
+      flex:1 1 auto;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:74px 1fr;
+      gap:6px;
+      height:100%;
+      min-height:0;
+    }
+
+    .tables{
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      padding-right:1px;
+    }
+
+    .table-btn{
+      width:100%;
+      min-height:45px;
+      padding:5px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      line-height:1.05;
+    }
+
+    .table-btn .n{
+      font-size:17px;
+      font-weight:900;
+    }
+
+    .table-btn .sum{
+      margin-top:2px;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .details{
+      min-width:0;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .person{
+      border:1px solid var(--line);
+      border-radius:13px;
+      overflow:hidden;
+      background:#fff;
+      cursor:pointer;
+    }
+
+    .person.selected{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px rgba(22,163,74,.12);
+    }
+
+    .person-head{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:5px;
+      align-items:center;
+      padding:6px;
+      background:#fbfcff;
+      border-bottom:1px solid var(--line-soft);
+    }
+
+    .person-title{
+      min-width:0;
+      font-size:15px;
+      font-weight:900;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .person-sum{
+      font-size:14px;
+      font-weight:900;
+      color:#166534;
+      white-space:nowrap;
+    }
+
+    .person-head button{
+      min-height:31px;
+      padding:5px 7px;
+      font-size:12px;
+    }
+
+    .order-list{
+      padding:3px 6px 5px;
+    }
+
+    .order-line{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      padding:4px 0;
+      border-bottom:1px solid var(--line-soft);
+      font-size:13px;
+    }
+
+    .order-line:last-child{
+      border-bottom:none;
+    }
+
+    .order-name{
+      min-width:0;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .order-price{
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:13px;
+      padding:8px;
+      text-align:center;
+    }
+
+    .bottom{
+      flex:1 1 auto;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      overflow:hidden;
+    }
+
+    .category{
+      min-height:0;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .category.collapsed{
+      flex:0 0 auto;
+    }
+
+    .category.expanded{
+      flex:1 1 50%;
+    }
+
+    .menubar{
+      cursor:pointer;
+    }
+
+    .menubar strong{
+      font-size:15px;
+    }
+
+    .menuitems{
+      flex:1 1 auto;
+      overflow:auto;
+      padding:6px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:5px;
+      align-content:start;
+    }
+
+    .category.collapsed .menuitems{
+      display:none;
+    }
+
+    .item-btn{
+      position:relative;
+      min-height:38px;
+      padding:7px 8px;
+      border-radius:10px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+      align-items:center;
+      text-align:left;
+      font-size:14px;
+      font-weight:750;
+    }
+
+    .item-btn.tap-feedback{
+      background:var(--accent-soft);
+      border-color:var(--accent);
+      transform:scale(.97);
+    }
+
+    .person.just-added,
+    .table-btn.just-added{
+      animation:flashAdded .7s ease;
+    }
+
+    @keyframes flashAdded{
+      0%{
+        box-shadow:0 0 0 4px rgba(22,163,74,.28);
+        border-color:var(--accent);
+      }
+      100%{
+        box-shadow:none;
+      }
+    }
+
+    .item-name{
+      min-width:0;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .item-price{
+      white-space:nowrap;
+      font-weight:900;
+      color:#166534;
+    }
+
+    .toast{
+      position:fixed;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      z-index:20;
+      padding:11px 13px;
+      border-radius:14px;
+      border:1px solid var(--accent-border);
+      background:var(--accent-soft);
+      color:#166534;
+      font-weight:850;
+      box-shadow:var(--shadow);
+      opacity:0;
+      transform:translateY(16px);
+      pointer-events:none;
+      transition:.18s ease;
+      text-align:center;
+      font-size:14px;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @media (min-width:520px){
+      .app{
+        max-width:520px;
+        margin:0 auto;
+      }
+
+      .menuitems{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <strong>Kassameister</strong>
+        <span class="current" id="currentText">Tisch 1 · Person 1</span>
+      </div>
+
+      <button class="secondary" id="undoBtn">↶ Undo</button>
+    </header>
+
+    <section class="top" id="topPanel">
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-title" id="topbarTitle">Aktuelle Auswahl</div>
+          <div class="topbar-current" id="topCurrentText">Tisch 1 · Person 1</div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="secondary small-action" id="addTableBtn">+T</button>
+          <button class="secondary small-action" id="addPersonBtn">+P</button>
+          <button class="ghost pay-action" id="checkoutTableBtn">€ T</button>
+          <button class="ghost pay-action" id="checkoutPersonBtn">€ P</button>
+          <button class="secondary toggle-btn" id="toggleTopBtn">⌃</button>
+        </div>
+      </div>
+
+      <div class="topbody">
+        <div class="layout">
+          <div class="tables" id="tables"></div>
+
+          <div class="details">
+            <div id="persons"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="topbody-collapsed">
+        <div class="empty">Tische und Personen hier auswählen.</div>
+      </div> -->
+    </section>
+
+    <section class="bottom">
+      <section class="category expanded" id="drinksCategory">
+        <div class="menubar" data-toggle-category="drinks">
+          <strong>Getränke</strong>
+          <button class="ghost toggle-btn" id="toggleDrinksBtn">⌃</button>
+          <!-- ▲ -->
+        </div>
+        <div class="menuitems" id="menuButtonsDrinks"></div>
+      </section>
+
+      <section class="category expanded" id="foodCategory">
+        <div class="menubar" data-toggle-category="food">
+          <strong>Essen</strong>
+          <button class="ghost toggle-btn" id="toggleFoodBtn">⌃</button>
+        </div>
+        <div class="menuitems" id="menuButtonsFood"></div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const DEFAULT_ITEMS = [
+      { name:"Speckbrot", category:"Essen", price:4.00 },
+      { name:"Fleischbrot", category:"Essen", price:4.00 },
+      { name:"Schmalzbrot", category:"Essen", price:2.50 },
+      { name:"Topfenkäsebrot", category:"Essen", price:3.00 },
+      { name:"Erdäpfelkäsebrot", category:"Essen", price:3.00 },
+      { name:"Heurigenjause", category:"Essen", price:0.50 },
+      { name:"Frankfurter", category:"Essen", price:4.50 },
+      { name:"Debreziner", category:"Essen", price:4.50 },
+      { name:"Scharfe", category:"Essen", price:4.50 },
+
+      { name:"1/2 lt. Bier, Radler od. Gösser alkoholfrei", category:"Getränk", price:4.40 },
+      { name:"1/3 lt. Bier od. Radler", category:"Getränk", price:4.00 },
+      { name:"1/3 lt. Gespritzter (in Flasche)", category:"Getränk", price:3.40 },
+      { name:"1/2 lt. Gespritzter (in Flasche)", category:"Getränk", price:3.80 },
+      { name:"1/4 lt. Wein gespritzt rot od. weiß", category:"Getränk", price:3.30 },
+      { name:"1/4 lt. Wein süß gespritzt", category:"Getränk", price:3.50 },
+      { name:"1/8 lt. Wein weiß Veltliner", category:"Getränk", price:3.10 },
+      { name:"1/8 lt. Wein rot Zweigelt", category:"Getränk", price:3.10 },
+      { name:"1/3 lt. Cola, Fanta, Almdudler (Flasche)", category:"Getränk", price:3.10 },
+      { name:"1/2 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:4.10 },
+      { name:"1/4 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:2.90 },
+      { name:"1/2 lt. Almdudler, Cappy mit Leitungswasser", category:"Getränk", price:3.80 },
+      { name:"1/4 lt. Almdudler, Cappy mit Leitungswasser", category:"Getränk", price:2.70 },
+      { name:"1,0 lt. Mineral Flasche", category:"Getränk", price:5.00 },
+      { name:"1/3 lt. Mineral Flasche", category:"Getränk", price:2.50 },
+      { name:"1/8 lt. Welschriesling", category:"Getränk", price:3.70 },
+      { name:"1/8 lt. Chardonnay", category:"Getränk", price:3.70 },
+      { name:"1/8 lt. Zweigelt exclusiv", category:"Getränk", price:3.70 },
+    ];
+
+    const STORAGE_KEY = "kassameister_state_v2";
+    const OLD_ORDERS_KEY = "table_orders_v1";
+
+    const money = new Intl.NumberFormat("de-AT", {
+      style:"currency",
+      currency:"EUR"
+    });
+
+    let state = loadState();
+
+    function createInitialState(){
+      return {
+        tables:[
+          { id:1, persons:[{ id:1 }] }
+        ],
+        orders:[],
+        selectedTableId:1,
+        selectedPersonId:1,
+        items:DEFAULT_ITEMS,
+        lastAdded:null,
+        ui:{
+          topCollapsed:false,
+          drinksCollapsed:false,
+          foodCollapsed:false
+        },
+        history:[]
+      };
+    }
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){
+          const parsed = JSON.parse(raw);
+          return normalizeState(parsed);
+        }
+
+        const oldRaw = localStorage.getItem(OLD_ORDERS_KEY);
+        if(oldRaw){
+          const oldOrders = JSON.parse(oldRaw);
+          if(Array.isArray(oldOrders)){
+            return migrateOldOrders(oldOrders);
+          }
+        }
+      }catch(e){
+        console.warn("State konnte nicht geladen werden:", e);
+      }
+
+      return createInitialState();
+    }
+
+    function normalizeState(input){
+      const fresh = createInitialState();
+
+      const next = {
+        ...fresh,
+        ...input,
+        ui:{ ...fresh.ui, ...(input.ui || {}) },
+        items:Array.isArray(input.items) && input.items.length ? input.items : DEFAULT_ITEMS,
+        orders:Array.isArray(input.orders) ? input.orders : [],
+        tables:Array.isArray(input.tables) && input.tables.length ? input.tables : fresh.tables,
+        history:Array.isArray(input.history) ? input.history : [],
+        lastAdded:input.lastAdded || null,
+      };
+
+      next.tables = next.tables
+        .map(table => ({
+          id:Number(table.id),
+          persons:Array.isArray(table.persons) && table.persons.length
+            ? table.persons.map(person => ({ id:Number(person.id) })).filter(person => Number.isFinite(person.id))
+            : [{ id:1 }]
+        }))
+        .filter(table => Number.isFinite(table.id))
+        .sort((a,b) => a.id - b.id);
+
+      next.orders = next.orders
+        .map(order => ({
+          id:order.id || uid(),
+          tableId:Number(order.tableId),
+          personId:Number(order.personId),
+          itemName:String(order.itemName || ""),
+          category:String(order.category || ""),
+          price:Number(order.price || 0),
+          createdAt:order.createdAt || new Date().toISOString()
+        }))
+        .filter(order => Number.isFinite(order.tableId) && Number.isFinite(order.personId) && order.itemName);
+
+      ensureTablesAndPersonsFromOrders(next);
+
+      if(!tableExists(next.selectedTableId, next)){
+        next.selectedTableId = next.tables[0].id;
+      }
+
+      if(!personExists(next.selectedTableId, next.selectedPersonId, next)){
+        next.selectedPersonId = next.tables.find(t => t.id === next.selectedTableId).persons[0].id;
+      }
+
+      return next;
+    }
+
+    function migrateOldOrders(oldOrders){
+      const migrated = createInitialState();
+
+      migrated.orders = oldOrders
+        .map(order => ({
+          id:uid(),
+          tableId:Number(order.table),
+          personId:Number(order.person),
+          itemName:String(order.itemName || ""),
+          category:"",
+          price:Number(order.price || 0),
+          createdAt:new Date().toISOString()
+        }))
+        .filter(order => Number.isFinite(order.tableId) && Number.isFinite(order.personId) && order.itemName);
+
+      ensureTablesAndPersonsFromOrders(migrated);
+
+      migrated.selectedTableId = migrated.tables[0]?.id || 1;
+      migrated.selectedPersonId = migrated.tables[0]?.persons[0]?.id || 1;
+
+      return migrated;
+    }
+
+    function ensureTablesAndPersonsFromOrders(targetState = state){
+      const tableMap = new Map();
+
+      targetState.tables.forEach(table => {
+        tableMap.set(table.id, new Set(table.persons.map(person => person.id)));
+      });
+
+      targetState.orders.forEach(order => {
+        if(!tableMap.has(order.tableId)){
+          tableMap.set(order.tableId, new Set());
+        }
+        tableMap.get(order.tableId).add(order.personId);
+      });
+
+      targetState.tables = [...tableMap.entries()]
+        .map(([tableId, personSet]) => ({
+          id:tableId,
+          persons:[...personSet].sort((a,b) => a - b).map(personId => ({ id:personId }))
+        }))
+        .sort((a,b) => a.id - b.id);
+    }
+
+    function removeFullyPaidTablesAndPersons(){
+      state.tables = state.tables
+        .map(table => {
+          const remainingPersons = table.persons.filter(person =>
+            state.orders.some(order =>
+              order.tableId === table.id && order.personId === person.id
+            )
+          );
+
+          return {
+            ...table,
+            persons:remainingPersons
+          };
+        })
+        .filter(table => table.persons.length > 0);
+
+      if(state.tables.length === 0){
+        state.tables = [
+          { id:1, persons:[{ id:1 }] }
+        ];
+        state.selectedTableId = 1;
+        state.selectedPersonId = 1;
+        return;
+      }
+
+      if(!tableExists(state.selectedTableId)){
+        state.selectedTableId = state.tables[0].id;
+      }
+
+      if(!personExists(state.selectedTableId, state.selectedPersonId)){
+        const selectedTable = state.tables.find(table => table.id === state.selectedTableId);
+        state.selectedPersonId = selectedTable.persons[0].id;
+      }
+    }
+
+    let saveTimer = null;
+    function saveState(){
+      clearTimeout(saveTimer);
+
+      saveTimer = setTimeout(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }, 120);
+    }
+
+    function saveStateNow(){
+      clearTimeout(saveTimer);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function snapshot(){
+      return JSON.stringify({
+        tables:state.tables,
+        orders:state.orders,
+        selectedTableId:state.selectedTableId,
+        selectedPersonId:state.selectedPersonId,
+        lastAdded:state.lastAdded
+      });
+    }
+
+    function beforeChange(label){
+      state.history.push({
+        label,
+        snapshot:snapshot()
+      });
+
+      if(state.history.length > 50){
+        state.history.shift();
+      }
+    }
+
+    function undo(){
+      const last = state.history.pop();
+
+      if(!last){
+        alert("Es gibt keine Aktion zum Rückgängigmachen.");
+        return;
+      }
+
+      const previous = JSON.parse(last.snapshot);
+
+      state.tables = previous.tables;
+      state.orders = previous.orders;
+      state.selectedTableId = previous.selectedTableId;
+      state.selectedPersonId = previous.selectedPersonId;
+      state.lastAdded = previous.lastAdded || null;
+
+      saveState();
+      renderAll();
+      showToast("Rückgängig: " + last.label);
+    }
+
+    function uid(){
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    function tableExists(tableId, targetState = state){
+      return targetState.tables.some(table => table.id === Number(tableId));
+    }
+
+    function personExists(tableId, personId, targetState = state){
+      const table = targetState.tables.find(table => table.id === Number(tableId));
+      return !!table && table.persons.some(person => person.id === Number(personId));
+    }
+
+    function getSelectedTable(){
+      return state.tables.find(table => table.id === state.selectedTableId);
+    }
+
+    function getOrdersForTable(tableId){
+      return state.orders.filter(order => order.tableId === tableId);
+    }
+
+    function getOrdersForPerson(tableId, personId){
+      return state.orders.filter(order => order.tableId === tableId && order.personId === personId);
+    }
+
+    function getTotal(orders){
+      return orders.reduce((sum, order) => sum + order.price, 0);
+    }
+
+    function groupOrders(orders){
+      const map = new Map();
+
+      orders.forEach(order => {
+        const key = `${order.itemName}__${order.price}`;
+
+        if(!map.has(key)){
+          map.set(key, {
+            itemName:order.itemName,
+            price:order.price,
+            count:0,
+            total:0
+          });
+        }
+
+        const row = map.get(key);
+        row.count += 1;
+        row.total += order.price;
+      });
+
+      return [...map.values()].sort((a,b) => a.itemName.localeCompare(b.itemName, "de"));
+    }
+
+    function addTable(){
+      beforeChange("Tisch hinzugefügt");
+
+      const nextId = state.tables.length
+        ? Math.max(...state.tables.map(table => table.id)) + 1
+        : 1;
+
+      state.tables.push({
+        id:nextId,
+        persons:[{ id:1 }]
+      });
+
+      state.selectedTableId = nextId;
+      state.selectedPersonId = 1;
+
+      saveState();
+      renderOrderArea();
+      scrollToSelectedTable();
+      scrollToSelectedPerson();
+
+      showToast("Tisch " + nextId + " hinzugefügt");
+    }
+
+    function addPerson(){
+      const table = getSelectedTable();
+
+      if(!table){
+        addTable();
+        return;
+      }
+
+      beforeChange("Person hinzugefügt");
+
+      const nextPersonId = table.persons.length
+        ? Math.max(...table.persons.map(person => person.id)) + 1
+        : 1;
+
+      table.persons.push({ id:nextPersonId });
+      table.persons.sort((a,b) => a.id - b.id);
+
+      state.selectedPersonId = nextPersonId;
+
+      saveState();
+      renderOrderArea();
+      scrollToSelectedPerson();
+
+      showToast("Person " + nextPersonId + " hinzugefügt");
+    }
+
+    function selectTable(tableId){
+      state.selectedTableId = tableId;
+
+      const table = getSelectedTable();
+
+      if(!personExists(tableId, state.selectedPersonId)){
+        state.selectedPersonId = table.persons[0].id;
+      }
+
+      saveState();
+      renderAll();
+    }
+
+    function selectPerson(personId){
+      state.selectedPersonId = personId;
+      saveState();
+      renderAll();
+    }
+
+    function addOrder(item){
+      if(!getSelectedTable()){
+        addTable();
+      }
+
+      if(!personExists(state.selectedTableId, state.selectedPersonId)){
+        state.selectedPersonId = getSelectedTable().persons[0].id;
+      }
+
+      beforeChange("Bestellung hinzugefügt");
+
+      state.orders.push({
+        id:uid(),
+        tableId:state.selectedTableId,
+        personId:state.selectedPersonId,
+        itemName:item.name,
+        category:item.category,
+        price:Number(item.price),
+        createdAt:new Date().toISOString()
+      });
+
+      state.lastAdded = {
+        tableId:state.selectedTableId,
+        personId:state.selectedPersonId,
+        itemName:item.name,
+        price:Number(item.price)
+      };
+
+      saveState();
+
+      // Wichtig: Nicht mehr renderAll(), weil das auch alle Menübuttons neu baut.
+      // Das war beim schnellen Tippen der größte Bremsklotz.
+      renderOrderArea();
+
+      showToast(`T${state.selectedTableId} · P${state.selectedPersonId}: ${item.name}`);
+    }
+
+    function checkoutPerson(){
+      if(state.ui.topCollapsed){
+        return;
+      }
+
+      const orders = getOrdersForPerson(state.selectedTableId, state.selectedPersonId);
+      const total = getTotal(orders);
+
+      if(!orders.length){
+        alert("Diese Person hat keine offenen Bestellungen.");
+        return;
+      }
+
+      const ok = confirm(
+        `Person abrechnen?\n\nTisch ${state.selectedTableId}, Person ${state.selectedPersonId}\nSumme: ${money.format(total)}\n\nDanach werden die Bestellungen dieser Person entfernt.`
+      );
+
+      if(!ok) return;
+
+      beforeChange("Person abgerechnet");
+
+      state.orders = state.orders.filter(order =>
+        !(order.tableId === state.selectedTableId && order.personId === state.selectedPersonId)
+      );
+
+      removeFullyPaidTablesAndPersons();
+
+      saveState();
+      renderAll();
+      showToast("Person abgerechnet: " + money.format(total));
+    }
+
+    function checkoutTable(){
+      if(state.ui.topCollapsed){
+        return;
+      }
+
+      const orders = getOrdersForTable(state.selectedTableId);
+      const total = getTotal(orders);
+
+      if(!orders.length){
+        alert("Dieser Tisch hat keine offenen Bestellungen.");
+        return;
+      }
+
+      const ok = confirm(
+        `Tisch abrechnen?\n\nTisch ${state.selectedTableId}\nSumme: ${money.format(total)}\n\nDanach werden alle Bestellungen dieses Tisches entfernt.`
+      );
+
+      if(!ok) return;
+
+      beforeChange("Tisch abgerechnet");
+
+      state.orders = state.orders.filter(order => order.tableId !== state.selectedTableId);
+
+      saveState();
+      renderAll();
+      showToast("Tisch abgerechnet: " + money.format(total));
+    }
+
+    function toggleTop(){
+      state.ui.topCollapsed = !state.ui.topCollapsed;
+      saveState();
+      renderAll();
+    }
+
+    function toggleCategory(category){
+      if(category === "drinks"){
+        state.ui.drinksCollapsed = !state.ui.drinksCollapsed;
+      }
+
+      if(category === "food"){
+        state.ui.foodCollapsed = !state.ui.foodCollapsed;
+      }
+
+      saveState();
+      renderAll();
+    }
+
+    function renderTables(){
+      const wrap = document.getElementById("tables");
+      wrap.innerHTML = "";
+
+      state.tables
+        .slice()
+        .sort((a,b) => a.id - b.id)
+        .forEach(table => {
+          const total = getTotal(getOrdersForTable(table.id));
+          const btn = document.createElement("button");
+
+          btn.className = "table-btn" + (table.id === state.selectedTableId ? " selected" : "");
+          btn.dataset.tableId = table.id;
+          btn.innerHTML = `
+            <span class="n">T${table.id}</span>
+            <span class="sum">${money.format(total)}</span>
+          `;
+
+          btn.onclick = () => selectTable(table.id);
+
+          wrap.appendChild(btn);
+        });
+    }
+
+    function renderPersons(){
+      const wrap = document.getElementById("persons");
+      const table = getSelectedTable();
+
+      wrap.innerHTML = "";
+
+      if(!table){
+        wrap.innerHTML = `<div class="empty">Noch kein Tisch vorhanden.</div>`;
+        return;
+      }
+
+      table.persons
+        .slice()
+        .sort((a,b) => a.id - b.id)
+        .forEach(person => {
+          const orders = getOrdersForPerson(table.id, person.id);
+          const total = getTotal(orders);
+          const grouped = groupOrders(orders);
+
+          const personEl = document.createElement("div");
+          personEl.className = "person" + (person.id === state.selectedPersonId ? " selected" : "");
+          personEl.dataset.personId = person.id;
+
+          const lines = grouped.length
+            ? grouped.map(row => `
+                <div class="order-line">
+                  <div class="order-name"><strong>${row.count}x</strong> ${escapeHtml(row.itemName)}</div>
+                  <div class="order-price">${money.format(row.total)}</div>
+                </div>
+              `).join("")
+            : `<div class="empty">Keine Bestellungen</div>`;
+
+          personEl.innerHTML = `
+            <div class="person-head">
+              <div class="person-title">Person ${person.id}</div>
+              <div class="person-sum">${money.format(total)}</div>
+            </div>
+            <div class="order-list">${lines}</div>
+          `;
+
+          personEl.onclick = () => selectPerson(person.id);
+
+          wrap.appendChild(personEl);
+        });
+    }
+
+    function renderMenu(){
+      const drinks = document.getElementById("menuButtonsDrinks");
+      const food = document.getElementById("menuButtonsFood");
+
+      drinks.innerHTML = "";
+      food.innerHTML = "";
+
+      state.items.forEach(item => {
+        const btn = document.createElement("button");
+
+        btn.className = "item-btn";
+        btn.innerHTML = `
+          <span class="item-name">${escapeHtml(item.name)}</span>
+          <span class="item-price">${money.format(item.price)}</span>
+        `;
+
+        btn.onclick = () => {
+          triggerTapFeedback(btn);
+          addOrder(item);
+        };
+
+        if(item.category === "Getränk"){
+          drinks.appendChild(btn);
+        }else{
+          food.appendChild(btn);
+        }
+      });
+    }
+
+    function getCollapsedLastAddedText(){
+      if(!state.lastAdded){
+        return "Noch nichts hinzugefügt";
+      }
+
+      const matchingOrders = state.orders.filter(order =>
+        order.tableId === state.lastAdded.tableId &&
+        order.personId === state.lastAdded.personId &&
+        order.itemName === state.lastAdded.itemName &&
+        order.price === state.lastAdded.price
+      );
+
+      if(matchingOrders.length === 0){
+        return "Noch nichts hinzugefügt";
+      }
+
+      return `${matchingOrders.length}x ${state.lastAdded.itemName}`;
+    }
+
+    function renderUiState(){
+      const topPanel = document.getElementById("topPanel");
+      const drinksCategory = document.getElementById("drinksCategory");
+      const foodCategory = document.getElementById("foodCategory");
+      const bottom = document.querySelector(".bottom");
+
+      const bothMenusCollapsed = state.ui.drinksCollapsed && state.ui.foodCollapsed;
+
+      topPanel.classList.toggle("collapsed", state.ui.topCollapsed);
+      topPanel.classList.toggle("fill", bothMenusCollapsed && !state.ui.topCollapsed);
+
+      bottom.classList.toggle("only-collapsed", bothMenusCollapsed);
+
+      drinksCategory.classList.toggle("collapsed", state.ui.drinksCollapsed);
+      drinksCategory.classList.toggle("expanded", !state.ui.drinksCollapsed);
+
+      foodCategory.classList.toggle("collapsed", state.ui.foodCollapsed);
+      foodCategory.classList.toggle("expanded", !state.ui.foodCollapsed);
+
+      document.getElementById("toggleTopBtn").textContent = state.ui.topCollapsed ? "⌄" : "⌃";
+      document.getElementById("toggleDrinksBtn").textContent = state.ui.drinksCollapsed ? "⌄" : "⌃";
+      document.getElementById("toggleFoodBtn").textContent = state.ui.foodCollapsed ? "⌄" : "⌃";
+
+      const checkoutPersonBtn = document.getElementById("checkoutPersonBtn");
+      const checkoutTableBtn = document.getElementById("checkoutTableBtn");
+
+      checkoutPersonBtn.disabled = state.ui.topCollapsed;
+      checkoutTableBtn.disabled = state.ui.topCollapsed;
+
+      const tableTotal = getTotal(getOrdersForTable(state.selectedTableId));
+      const personTotal = getTotal(getOrdersForPerson(state.selectedTableId, state.selectedPersonId));
+
+      const txt = `T ${state.selectedTableId} · P ${state.selectedPersonId}`;
+      const txtFull = `T${state.selectedTableId} ${money.format(tableTotal)} · P${state.selectedPersonId} ${money.format(personTotal)}`;
+
+      document.getElementById("currentText").textContent = txtFull;
+      document.getElementById("topbarTitle").textContent = "Aktuelle Auswahl";
+      document.getElementById("topCurrentText").textContent = txt;
+    }
+
+    let pendingScroll = null;
+
+    function renderOrderArea(){
+      ensureTablesAndPersonsFromOrders();
+      renderTables();
+      renderPersons();
+      renderUiState();
+    }
+
+    function scrollToSelectedTable(){
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`.table-btn[data-table-id="${state.selectedTableId}"]`);
+        if(el){
+          el.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest",
+            inline:"nearest"
+          });
+
+          el.classList.add("just-added");
+          setTimeout(() => el.classList.remove("just-added"), 750);
+        }
+      });
+    }
+
+    function scrollToSelectedPerson(){
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`.person[data-person-id="${state.selectedPersonId}"]`);
+        if(el){
+          el.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest",
+            inline:"nearest"
+          });
+
+          el.classList.add("just-added");
+          setTimeout(() => el.classList.remove("just-added"), 750);
+        }
+      });
+    }
+
+    function triggerTapFeedback(button){
+      button.classList.remove("tap-feedback");
+      void button.offsetWidth;
+      button.classList.add("tap-feedback");
+
+      setTimeout(() => {
+        button.classList.remove("tap-feedback");
+      }, 120);
+    }
+
+    function renderAll(){
+      renderOrderArea();
+      renderMenu();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    let toastTimeout;
+
+    function showToast(message){
+      const toast = document.getElementById("toast");
+
+      clearTimeout(toastTimeout);
+
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1600);
+    }
+
+    document.getElementById("undoBtn").onclick = undo;
+    document.getElementById("addTableBtn").onclick = addTable;
+    document.getElementById("addPersonBtn").onclick = addPerson;
+    document.getElementById("checkoutPersonBtn").onclick = checkoutPerson;
+    document.getElementById("checkoutTableBtn").onclick = checkoutTable;
+    document.getElementById("toggleTopBtn").onclick = toggleTop;
+
+    document.querySelector('[data-toggle-category="drinks"]').onclick = () => toggleCategory("drinks");
+    document.querySelector('[data-toggle-category="food"]').onclick = () => toggleCategory("food");
+
+    document.addEventListener("wheel", e => {
+      if(e.ctrlKey) e.preventDefault();
+    }, { passive:false });
+
+    document.addEventListener("keydown", e => {
+      if((e.ctrlKey || e.metaKey) && ["+", "-", "0"].includes(e.key)){
+        e.preventDefault();
+      }
+    });
+
+    renderAll();
+    saveStateNow();
+  </script>
+</body>
+</html>
