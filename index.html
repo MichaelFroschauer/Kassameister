@@ -61,7 +61,7 @@
     }
 
     button:active{
-      transform:scale(.98);
+      transform:scale(.99);
     }
 
     button.primary{
@@ -445,7 +445,7 @@
     .item-btn.tap-feedback{
       background:var(--accent-soft);
       border-color:var(--accent);
-      transform:scale(.97);
+      /* transform:scale(1.995); */
     }
 
     .person.just-added,
@@ -1316,18 +1316,18 @@
     }
 
     function triggerTapFeedback(button){
-      button.classList.remove("tap-feedback");
-      void button.offsetWidth;
-      button.classList.add("tap-feedback");
+      // button.classList.remove("tap-feedback");
+      // void button.offsetWidth;
+      // button.classList.add("tap-feedback");
 
-      setTimeout(() => {
-        button.classList.remove("tap-feedback");
-      }, 120);
+      // setTimeout(() => {
+      //   button.classList.remove("tap-feedback");
+      // }, 120);
     }
 
     function renderAll(){
       renderOrderArea();
-      renderMenu();
+      //renderMenu();
     }
 
     function escapeHtml(str){
@@ -1374,6 +1374,7 @@
       }
     });
 
+    renderMenu();
     renderAll();
     saveStateNow();
   </script>
