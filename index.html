@@ -149,8 +149,8 @@
     }
 
     .top.collapsed{
-      flex:0 0 66px;
-      min-height:66px;
+      flex:0 0 96px;
+      min-height:96px;
     }
 
     .top.fill{
@@ -205,6 +205,40 @@
       min-width:40px;
     }
 
+    .collapsed-last-entry{
+      display:none;
+      height:100%;
+      align-items:center;
+      padding:6px 8px;
+      border:1px solid var(--accent-border);
+      background:var(--accent-soft);
+      border-radius:12px;
+      font-size:15px;
+      font-weight:800;
+      line-height:1.2;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .top.collapsed .topbody{
+      flex:1 1 auto;
+      overflow:hidden;
+      padding:5px 6px 6px;
+    }
+
+    .top.collapsed .layout{
+      display:none;
+    }
+
+    .top.collapsed .collapsed-last-entry{
+      display:flex;
+    }
+
+    .top:not(.collapsed) .collapsed-last-entry{
+      display:none;
+    }
+
     .bottom.only-collapsed{
       flex:0 0 auto;
     }
@@ -221,16 +255,6 @@
       flex:1 1 auto;
       overflow:auto;
       padding:6px;
-    }
-
-    .top.collapsed .topbody{
-      display:none;
-    }
-
-    .topbody-collapsed{
-      flex:1 1 auto;
-      align-items:center;
-      justify-content:center;
     }
 
     .layout{
@@ -485,6 +509,20 @@
       transform:translateY(0);
     }
 
+    .copyright-footer{
+      display:none;
+      flex:0 0 auto;
+      padding:0px;
+      text-align:center;
+      font-size:10px;
+      line-height:1.0;
+      color:var(--muted);
+      opacity:.6;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
     @media (min-width:520px){
       .app{
         max-width:520px;
@@ -506,7 +544,7 @@
         <span class="current" id="currentText">Tisch 1 · Person 1</span>
       </div>
 
-      <button class="secondary" id="undoBtn">↶ Undo</button>
+      <button class="secondary" id="undoBtn">↶</button>
     </header>
 
     <section class="top" id="topPanel">
@@ -526,7 +564,11 @@
       </div>
 
       <div class="topbody">
-        <div class="layout">
+        <div class="collapsed-last-entry" id="collapsedLastEntry">
+          Noch nichts hinzugefügt
+        </div>
+
+        <div class="layout" id="topLayout">
           <div class="tables" id="tables"></div>
 
           <div class="details">
@@ -535,9 +577,6 @@
         </div>
       </div>
 
-      <!-- <div class="topbody-collapsed">
-        <div class="empty">Tische und Personen hier auswählen.</div>
-      </div> -->
     </section>
 
     <section class="bottom">
@@ -545,7 +584,6 @@
         <div class="menubar" data-toggle-category="drinks">
           <strong>Getränke</strong>
           <button class="ghost toggle-btn" id="toggleDrinksBtn">⌃</button>
-          <!-- ▲ -->
         </div>
         <div class="menuitems" id="menuButtonsDrinks"></div>
       </section>
@@ -558,6 +596,10 @@
         <div class="menuitems" id="menuButtonsFood"></div>
       </section>
     </section>
+
+    <div class="copyright-footer" id="copyrightFooter">
+      © 2026 Ing. Michael Froschauer, BSc. Alle Rechte vorbehalten.
+    </div>
   </main>
 
   <div id="toast" class="toast"></div>
@@ -1042,6 +1084,8 @@
 
       state.orders = state.orders.filter(order => order.tableId !== state.selectedTableId);
 
+      removeFullyPaidTablesAndPersons();
+
       saveState();
       renderAll();
       showToast("Tisch abgerechnet: " + money.format(total));
@@ -1191,6 +1235,7 @@
       const bottom = document.querySelector(".bottom");
 
       const bothMenusCollapsed = state.ui.drinksCollapsed && state.ui.foodCollapsed;
+      document.getElementById("copyrightFooter").style.display = bothMenusCollapsed ? "block" : "none";
 
       topPanel.classList.toggle("collapsed", state.ui.topCollapsed);
       topPanel.classList.toggle("fill", bothMenusCollapsed && !state.ui.topCollapsed);
@@ -1222,6 +1267,9 @@
       document.getElementById("currentText").textContent = txtFull;
       document.getElementById("topbarTitle").textContent = "Aktuelle Auswahl";
       document.getElementById("topCurrentText").textContent = txt;
+
+      const collapsedLastEntry = document.getElementById("collapsedLastEntry");
+      collapsedLastEntry.textContent = getCollapsedLastAddedText();
     }
 
     let pendingScroll = null;
