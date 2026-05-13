@@ -2,7 +2,7 @@
 // This cache version must be updated if the cached files are changed,
 // otherwise the old files will be used and the app might break.
 // The old cache will be deleted on activation of the new service worker.
-const CACHE_NAME = "kassameister-pwa-v1";
+const CACHE_NAME = "kassameister-pwa-v2";
 
 const FILES_TO_CACHE = [
   "./",

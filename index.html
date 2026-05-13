@@ -607,27 +607,29 @@
 
   <script>
     const DEFAULT_ITEMS = [
-      { name:"Speckbrot", category:"Essen", price:4.00 },
-      { name:"Fleischbrot", category:"Essen", price:4.00 },
-      { name:"Schmalzbrot", category:"Essen", price:2.50 },
-      { name:"Topfenkäsebrot", category:"Essen", price:3.00 },
-      { name:"Erdäpfelkäsebrot", category:"Essen", price:3.00 },
-      { name:"Heurigenjause", category:"Essen", price:0.50 },
-      { name:"Frankfurter", category:"Essen", price:4.50 },
-      { name:"Debreziner", category:"Essen", price:4.50 },
-      { name:"Scharfe", category:"Essen", price:4.50 },
+      { name:"Speckbrot", category:"Essen", price:4.50 },
+      { name:"Fleischbrot", category:"Essen", price:4.50 },
+      { name:"Verhackertes Brot", category:"Essen", price:3.50 },
+      { name:"Topfenkäsebrot", category:"Essen", price:3.50 },
+      { name:"Erdäpfelkäsebrot", category:"Essen", price:3.50 },
+      { name:"Heurigenjause", category:"Essen", price:11.00 },
+      { name:"Frankfurter", category:"Essen", price:5.00 },
+      { name:"Debreziner", category:"Essen", price:5.00 },
+      { name:"Scharfe", category:"Essen", price:5.00 },
+      { name:"Krapfen", category:"Essen", price:2.50 },
+      { name:"Nussschnecke", category:"Essen", price:2.50 },
 
-      { name:"1/2 lt. Bier, Radler od. Gösser alkoholfrei", category:"Getränk", price:4.40 },
+      { name:"1/2 lt. Bier, Radler od. Gösser alkoholfrei", category:"Getränk", price:4.50 },
       { name:"1/3 lt. Bier od. Radler", category:"Getränk", price:4.00 },
-      { name:"1/3 lt. Gespritzter (in Flasche)", category:"Getränk", price:3.40 },
-      { name:"1/2 lt. Gespritzter (in Flasche)", category:"Getränk", price:3.80 },
+      { name:"1/3 lt. Gespritzter (in Flasche)", category:"Getränk", price:3.50 },
+      { name:"1/2 lt. Gespritzter (in Flasche)", category:"Getränk", price:4.00 },
       { name:"1/4 lt. Wein gespritzt rot od. weiß", category:"Getränk", price:3.30 },
       { name:"1/4 lt. Wein süß gespritzt", category:"Getränk", price:3.50 },
       { name:"1/8 lt. Wein weiß Veltliner", category:"Getränk", price:3.10 },
       { name:"1/8 lt. Wein rot Zweigelt", category:"Getränk", price:3.10 },
-      { name:"1/3 lt. Cola, Fanta, Almdudler (Flasche)", category:"Getränk", price:3.10 },
-      { name:"1/2 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:4.10 },
-      { name:"1/4 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:2.90 },
+      { name:"1/3 lt. Cola, Fanta, Almdudler (Flasche)", category:"Getränk", price:3.20 },
+      { name:"1/2 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:4.20 },
+      { name:"1/4 lt. Almdudler, Cappy mit Mineral", category:"Getränk", price:3.00 },
       { name:"1/2 lt. Almdudler, Cappy mit Leitungswasser", category:"Getränk", price:3.80 },
       { name:"1/4 lt. Almdudler, Cappy mit Leitungswasser", category:"Getränk", price:2.70 },
       { name:"1,0 lt. Mineral Flasche", category:"Getränk", price:5.00 },
@@ -635,9 +637,10 @@
       { name:"1/8 lt. Welschriesling", category:"Getränk", price:3.70 },
       { name:"1/8 lt. Chardonnay", category:"Getränk", price:3.70 },
       { name:"1/8 lt. Zweigelt exclusiv", category:"Getränk", price:3.70 },
+      { name:"Kaffee", category:"Getränk", price:3.20 },
     ];
 
-    const STORAGE_KEY = "kassameister_state_v2";
+    const STORAGE_KEY = "kassameister_state_v3";
     const OLD_ORDERS_KEY = "table_orders_v1";
 
     const money = new Intl.NumberFormat("de-AT", {
